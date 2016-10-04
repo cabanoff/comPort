@@ -6,10 +6,12 @@
 package comportapp2;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import jssc.*;
 
 /**
@@ -28,6 +30,30 @@ public class ComPortApp2 extends Application {
         
         stage.setScene(scene);
         stage.show();
+        System.out.println("Stage is open");
+//        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//          @Override
+//          public void handle(WindowEvent we) {
+//              System.out.println("Stage is closing");
+//          }
+//      });   
+        
+    }
+      
+    
+    @Override
+    public void stop(){
+        
+        if((serialPort != null)&&(serialPort.isOpened())){
+            try{
+                serialPort.closePort();
+                System.out.println("port closed");
+            }catch(SerialPortException spe){
+                System.out.println("unable to open " + spe.getLocalizedMessage() );          
+            }
+            
+        }
+        System.out.println("stage is closed");            
     }
 
     /**
@@ -35,14 +61,6 @@ public class ComPortApp2 extends Application {
      */
     public static void main(String[] args) {
         launch(args);
-        new ComPortApp2().go();   
-    }
-    
-    
-    public void go(){
-        
-        
-        
         serialPort = new SerialPort("COM4");
         try{          
             serialPort.openPort(); 
@@ -57,11 +75,20 @@ public class ComPortApp2 extends Application {
             serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
             //Отправляем запрос устройству
             serialPort.writeString("Get data");
+            System.out.println("port opened");
         }
         catch(SerialPortException ex){
             System.out.println("error 1");
             System.out.println(ex);
         }
+        //new ComPortApp2().go();   
+    }
+    
+    
+    public void go(){
+               
+        
+
     }
     
     private static class PortReader implements SerialPortEventListener {

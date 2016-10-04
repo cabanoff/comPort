@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import jssc.SerialPortList;
 
 /**
  *
@@ -21,9 +22,11 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private ChoiceBox <String> comPortNum;
-    
+        
     @FXML
     private ChoiceBox <String> comPortBaudRate;
+
+    
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -34,7 +37,9 @@ public class FXMLDocumentController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
+        //comPortNum.getItems().addAll(SerialPortList.getPortNames());
+        
     }    
     
 }
