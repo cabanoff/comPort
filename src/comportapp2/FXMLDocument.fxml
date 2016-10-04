@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
@@ -8,23 +9,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="comportapp2.FXMLDocumentController">
-    <children>
-        <Button fx:id="button" contentDisplay="CENTER" layoutX="106.0" layoutY="78.0" onAction="#handleButtonAction" text="Click Me!" textOverrun="WORD_ELLIPSIS">
-         <font>
-            <Font size="20.0" />
-         </font>
-         <textFill>
-            <RadialGradient centerX="0.3722222222222223" centerY="0.4952380952380952" radius="0.5">
-               <stops>
-                  <Stop color="#000000d1" />
-                  <Stop color="WHITE" offset="1.0" />
-               </stops>
-            </RadialGradient>
-         </textFill></Button>
-        <Label fx:id="label" alignment="CENTER" layoutX="124.0" layoutY="49.0" minHeight="16" minWidth="69" text="Hi" textAlignment="CENTER" AnchorPane.bottomAnchor="124.0" AnchorPane.leftAnchor="124.0" AnchorPane.rightAnchor="127.0" AnchorPane.topAnchor="49.0">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-    </children>
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comportapp2.FXMLDocumentController">
+   <children>
+      <ChoiceBox fx:id="comPortNum" layoutX="23.0" layoutY="29.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="comPortBaudRate" layoutX="23.0" layoutY="88.0" prefWidth="150.0" />
+   </children>
 </AnchorPane>

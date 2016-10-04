@@ -35,6 +35,14 @@ public class ComPortApp2 extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        new ComPortApp2().go();   
+    }
+    
+    
+    public void go(){
+        
+        
+        
         serialPort = new SerialPort("COM4");
         try{          
             serialPort.openPort(); 
