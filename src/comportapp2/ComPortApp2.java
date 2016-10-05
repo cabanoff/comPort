@@ -31,6 +31,7 @@ public class ComPortApp2 extends Application {
         stage.setScene(scene);
         stage.show();
         System.out.println("Stage is open");
+        new ComPortApp2().go();   
 //        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 //          @Override
 //          public void handle(WindowEvent we) {
@@ -42,7 +43,7 @@ public class ComPortApp2 extends Application {
       
     
     @Override
-    public void stop(){
+    public void stop() throws Exception{
         
         if((serialPort != null)&&(serialPort.isOpened())){
             try{
@@ -61,6 +62,11 @@ public class ComPortApp2 extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+            
+    }
+     
+    public void go(){
+               
         serialPort = new SerialPort("COM4");
         try{          
             serialPort.openPort(); 
@@ -81,13 +87,6 @@ public class ComPortApp2 extends Application {
             System.out.println("error 1");
             System.out.println(ex);
         }
-        //new ComPortApp2().go();   
-    }
-    
-    
-    public void go(){
-               
-        
 
     }
     
