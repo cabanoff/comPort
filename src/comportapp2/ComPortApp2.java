@@ -5,11 +5,13 @@
  */
 package comportapp2;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import jssc.*;
@@ -21,7 +23,44 @@ import jssc.*;
 public class ComPortApp2 extends Application {
     
     private static SerialPort serialPort;
+    private Stage primaryStage;
+    private AnchorPane rootLayout;
     
+     @Override
+    public void start(Stage primaryStage) {
+       this.primaryStage = primaryStage;
+       this.primaryStage.setTitle("Comport Loader");
+       
+       initRootLayout();
+       
+            
+    }
+    
+    /**
+     * Initialize root layout
+     */
+    public void initRootLayout(){
+        try{
+            //load root layout from fxml file.
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ComPortApp2.class.getResource("FXMLDocument.fxml"));
+            rootLayout = (AnchorPane)loader.load();
+            
+            //Show scene, containing root layout 
+            Scene scene = new Scene(rootLayout);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            
+            //give controller access to the main application
+            FXMLDocumentController controller = loader.getController();
+            controller.setMainApp(this);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * @throws java.lang.Exception
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
@@ -32,15 +71,9 @@ public class ComPortApp2 extends Application {
         stage.show();
         System.out.println("Stage is open");
         new ComPortApp2().go();   
-//        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//          @Override
-//          public void handle(WindowEvent we) {
-//              System.out.println("Stage is closing");
-//          }
-//      });   
         
     }
-      
+     */
     
     @Override
     public void stop() throws Exception{
@@ -51,8 +84,7 @@ public class ComPortApp2 extends Application {
                 System.out.println("port closed");
             }catch(SerialPortException spe){
                 System.out.println("unable to open " + spe.getLocalizedMessage() );          
-            }
-            
+            }           
         }
         System.out.println("stage is closed");            
     }
@@ -88,6 +120,14 @@ public class ComPortApp2 extends Application {
             System.out.println(ex);
         }
 
+    }
+    
+    /**
+     * Returns main stage
+     * @return
+     */
+    public Stage getPrimaryStage(){
+        return primaryStage;
     }
     
     private static class PortReader implements SerialPortEventListener {
