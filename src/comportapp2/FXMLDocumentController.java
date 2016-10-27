@@ -70,6 +70,7 @@ public class FXMLDocumentController {
      */
     @FXML
     private void handleComPort(MouseEvent event){
+       // assert false :"comboBox " + Arrays.toString(SerialPortList.getPortNames());
         System.out.println("comboBox " + Arrays.toString(SerialPortList.getPortNames()));
         String[] serialPortList = SerialPortList.getPortNames();
         ObservableList<String> newComPortList = FXCollections.observableArrayList(
@@ -119,6 +120,10 @@ public class FXMLDocumentController {
             comPortCommunication.appendText("out: Pulse Width = " + pulseWidth + ", Pulses Number = " + pulsesNum + "\n");
         }
         
+    }
+    @FXML
+    private void handleClearCommand(ActionEvent event){
+        comPortCommunication.clear();
     }
    
     /**
