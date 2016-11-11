@@ -41,6 +41,8 @@ public class FXMLDocumentController {
     @FXML
     private ChoiceBox <Integer> comPortBaudRate;
     @FXML
+    private ChoiceBox <ComPort.BaudRate> test;
+    @FXML
     private Label pulseWidthLabel;
     @FXML
     private Label pulsesNumberLabel;
@@ -58,6 +60,7 @@ public class FXMLDocumentController {
 
     //reference to main application
     private ComPortApp2 mainApp;
+    private ComPort comPort;
     
     private String strComPortNum;
     private Integer iComPortBaudRate;
@@ -132,6 +135,11 @@ public class FXMLDocumentController {
      */
     @FXML
     private void initialize() {
+        comPort = new ComPort();
+       // System.out.println(comPort.getBaudRateList());
+        //test = new ChoiceBox<>(comPort.getBaudRateList());
+        test.setItems(comPort.getBaudRateList());
+        
         String[] serialPortList = SerialPortList.getPortNames();
         comPortNum.getItems().addAll(serialPortList);
         if(serialPortList.length != 0){
@@ -174,6 +182,5 @@ public class FXMLDocumentController {
         // adding data from observable list to the table
         //personTable.setItems(mainApp.getPersonData());
     }
-
     
 }

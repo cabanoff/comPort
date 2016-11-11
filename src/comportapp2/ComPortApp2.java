@@ -80,6 +80,7 @@ public class ComPortApp2 extends Application {
         
         if((serialPort != null)&&(serialPort.isOpened())){
             try{
+                serialPort.removeEventListener();
                 serialPort.closePort();
                 System.out.println("port closed");
             }catch(SerialPortException spe){
@@ -96,13 +97,12 @@ public class ComPortApp2 extends Application {
         launch(args);
             
     }
-     
-    public void go(){
-               
-        serialPort = new SerialPort("COM4");
+    
+    public boolean connect(String portName, int baudRate){
+        serialPort = new SerialPort(portName);
         try{          
             serialPort.openPort(); 
-            serialPort.setParams(SerialPort.BAUDRATE_9600,
+            serialPort.setParams(baudRate,
                                  SerialPort.DATABITS_8,
                                  SerialPort.STOPBITS_1,
                                  SerialPort.PARITY_NONE);
@@ -112,15 +112,17 @@ public class ComPortApp2 extends Application {
             //Устанавливаем ивент лисенер и маску
             serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
             //Отправляем запрос устройству
-            serialPort.writeString("Get data");
+            //serialPort.writeString("Get data");
             System.out.println("port opened");
+            return true;
         }
         catch(SerialPortException ex){
             System.out.println("error 1");
             System.out.println(ex);
+            return false;
         }
-
     }
+     
     
     /**
      * Returns main stage
@@ -139,7 +141,7 @@ public class ComPortApp2 extends Application {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
                     String data = serialPort.readString(event.getEventValue());
                     //И снова отправляем запрос
-                    serialPort.writeString("Get data");
+                    //serialPort.writeString("Get data");
                 }
                 catch (SerialPortException ex) {
                     System.out.println(ex);

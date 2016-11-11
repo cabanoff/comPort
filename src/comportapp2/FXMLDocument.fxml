@@ -35,5 +35,6 @@
          </font></Label>
       <Button layoutX="24.0" layoutY="258.0" mnemonicParsing="false" onAction="#handleSendCommand" prefHeight="25.0" prefWidth="70.0" text="Send" />
       <Button layoutX="122.0" layoutY="258.0" mnemonicParsing="false" onAction="#handleClearCommand" prefHeight="25.0" prefWidth="70.0" text="Clear" />
+      <ChoiceBox fx:id="test" layoutX="28.0" layoutY="327.0" prefWidth="150.0" />
    </children>
 </AnchorPane>

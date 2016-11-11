@@ -9,12 +9,15 @@ package comportapp2;
  *
  * @author WIN7x64
  */
-
+import java.util.ArrayList;
+import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import jssc.*;
 
 public class ComPort {
     private static SerialPort serialPort;
-    
+        
     public enum BaudRate{
         BAUDRATE_110{
             @Override
@@ -36,9 +39,36 @@ public class ComPort {
         public int value() {
             return 9600;
         }
+        @Override
+        public String toString(){
+            return Integer.toString(value());
+        }
     }
     private String portName;
     private ComPort.BaudRate baudRate;
+    private List<ComPort.BaudRate> baudRateList;
+    private ObservableList<ComPort.BaudRate> baudRateOList;
+    
+    public ObservableList<ComPort.BaudRate> getBaudRateList(){
+        baudRateList = new ArrayList<>();
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_110);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_300);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_600);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_1200);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_4800);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_9600);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_14400);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_19200);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_38400);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_57600);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_115200);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_128000);
+        baudRateList.add(ComPort.BaudRate.BAUDRATE_256000);
+        
+        baudRateOList = FXCollections.observableList(baudRateList);
+        System.out.println(baudRateOList);
+        return baudRateOList;
+    }
     
     public boolean connect(String portName, ComPort.BaudRate baudRate){
         if((!portName.isEmpty())&&(portName.regionMatches(0, "COM", 0, 3))){
@@ -69,6 +99,7 @@ public class ComPort {
         }
         else return false;
     }
+    
     private boolean openPort(String portName, ComPort.BaudRate baudRate){
         try{
             
