@@ -17,6 +17,7 @@ import jssc.*;
 
 public class ComPort {
     private static SerialPort serialPort;
+    private static FXMLDocumentController controller;
         
     public enum BaudRate{
         BAUDRATE_110{
@@ -51,19 +52,14 @@ public class ComPort {
     
     public ObservableList<ComPort.BaudRate> getBaudRateList(){
         baudRateList = new ArrayList<>();
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_110);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_300);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_600);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_1200);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_4800);
+        
         baudRateList.add(ComPort.BaudRate.BAUDRATE_9600);
         baudRateList.add(ComPort.BaudRate.BAUDRATE_14400);
         baudRateList.add(ComPort.BaudRate.BAUDRATE_19200);
         baudRateList.add(ComPort.BaudRate.BAUDRATE_38400);
         baudRateList.add(ComPort.BaudRate.BAUDRATE_57600);
         baudRateList.add(ComPort.BaudRate.BAUDRATE_115200);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_128000);
-        baudRateList.add(ComPort.BaudRate.BAUDRATE_256000);
+        
         
         baudRateOList = FXCollections.observableList(baudRateList);
         System.out.println(baudRateOList);
@@ -71,21 +67,32 @@ public class ComPort {
     }
     
     public boolean connect(String portName, ComPort.BaudRate baudRate){
-        if((!portName.isEmpty())&&(portName.regionMatches(0, "COM", 0, 3))){
-            if(serialPort == null){
-                serialPort = new SerialPort(portName);
-                return openPort(portName,baudRate);
-            }
-            if(serialPort.isOpened()){
-                if((this.portName.equals(portName))&&(this.baudRate == baudRate)){// the same port is open
-                    return true;
+        System.out.println("open port check 0");
+        if(portName != null){
+            System.out.println("open port check 1");
+            if((!portName.isEmpty())&&(portName.regionMatches(0, "COM", 0, 3))){
+                if(serialPort == null){
+                    serialPort = new SerialPort(portName);
+                    System.out.println("open port check 3");
+                    return openPort(portName,baudRate);
                 }
-                closePort();
+                if(serialPort.isOpened()){
+                    if((this.portName.equals(portName))&&(this.baudRate == baudRate)){// the same port is open
+                        System.out.println("open port check 4");
+                        return true;
+                    }
+                    closePort();
+                    System.out.println("open port check 5");
+                    return openPort(portName,baudRate);
+                }
+                System.out.println("open port check 6");
                 return openPort(portName,baudRate);
             }
-            return openPort(portName,baudRate);
         }
-        else return false;
+        System.out.println("open port check 2");
+        closePort();
+        serialPort=null;
+        return false;
     }
     
     public boolean writeString(String string){
@@ -98,6 +105,14 @@ public class ComPort {
             }
         }
         else return false;
+    }
+    
+    public void setController(FXMLDocumentController controller){
+        this.controller = controller;
+    }
+    
+    public void close(){
+        closePort();
     }
     
     private boolean openPort(String portName, ComPort.BaudRate baudRate){
@@ -136,7 +151,7 @@ public class ComPort {
                 System.out.println("unable to close port " + spe.getLocalizedMessage() );          
             }           
         }
-        System.out.println("stage is closed");    
+        //System.out.println("stage is closed");    
     }
     
     private static class PortReader implements SerialPortEventListener {
@@ -146,7 +161,15 @@ public class ComPort {
             if(event.isRXCHAR() && event.getEventValue() > 0){
                 try {
                     //Получаем ответ от устройства, обрабатываем данные и т.д.
-                    String data = serialPort.readString(event.getEventValue());
+                    //String data = serialPort.readString(event.getEventValue());
+                    byte[] data = serialPort.readBytes(event.getEventValue());
+                    StringBuilder builder = new StringBuilder();
+                    for(byte b:data){
+                        builder.append(String.format("%02x", b));
+                    }
+                    if(controller != null){
+                        controller.printString(builder.toString());
+                    }
                     //И снова отправляем запрос
                     //serialPort.writeString("Get data");
                 }

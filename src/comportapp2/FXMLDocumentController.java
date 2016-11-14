@@ -5,29 +5,20 @@
  */
 package comportapp2;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ResourceBundle;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import jssc.SerialPort;
 import jssc.SerialPortList;
 
 /**
@@ -39,9 +30,8 @@ public class FXMLDocumentController {
     @FXML
     private ChoiceBox <String> comPortNum;      
     @FXML
-    private ChoiceBox <Integer> comPortBaudRate;
-    @FXML
-    private ChoiceBox <ComPort.BaudRate> test;
+    private ChoiceBox <ComPort.BaudRate> comPortBaudRate;
+    
     @FXML
     private Label pulseWidthLabel;
     @FXML
@@ -62,13 +52,14 @@ public class FXMLDocumentController {
     private ComPortApp2 mainApp;
     private ComPort comPort;
     
-    private String strComPortNum;
-    private Integer iComPortBaudRate;
+    //private String strComPortNum;
     
     /**
+     * on mouse click
      * Checks if comPortList isn't changed
-     * if not checks if selected port still exists
-     * if not set selected port to null.
+     * if not, checks if selected port still exists
+     * if not, sets selected port to null.
+     * reconnect com port it needed
      * @param event 
      */
     @FXML
@@ -78,12 +69,13 @@ public class FXMLDocumentController {
         String[] serialPortList = SerialPortList.getPortNames();
         ObservableList<String> newComPortList = FXCollections.observableArrayList(
                 new ArrayList<String>(Arrays.asList(serialPortList)));
+        
         if(!newComPortList.equals(comPortNum.getItems())){
             String comPortSelected = comPortNum.getValue();
             if(!comPortNum.getItems().contains(comPortSelected)){
                 comPortNum.getItems().clear();
                 comPortNum.getItems().addAll(serialPortList);
-                strComPortNum = "";
+                //strComPortNum = "";
             }
             else{
                 comPortNum.getItems().clear();
@@ -91,35 +83,35 @@ public class FXMLDocumentController {
                 comPortNum.setValue(comPortSelected);
             }
         }
+        
     }
     
     
     @FXML
     private void handleSendCommand(ActionEvent event) {
-        strComPortNum = comPortNum.getValue();
-        iComPortBaudRate = comPortBaudRate.getValue();
-        System.out.println("chooseComPortName = " + strComPortNum);
-        System.out.println("chooseBaudRate = " + iComPortBaudRate);
+        //strComPortNum = comPortNum.getValue();
+       // System.out.println("chooseComPortName = " + strComPortNum);
+        System.out.println("chooseBaudRate = " + comPortBaudRate.getValue());
         System.out.println("Button "+ Arrays.toString(SerialPortList.getPortNames()));
         
       
-        if((null == strComPortNum)||(iComPortBaudRate == null)){
+        if((null == comPortNum.getValue())||(comPortBaudRate.getValue() == null)){
             //port or baud rate not selected.
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.initOwner(mainApp.getPrimaryStage());
             alert.setTitle("No Selection");
-            if(null == strComPortNum){
+            if(null == comPortNum.getValue()){
                 alert.setHeaderText("Не выбран порт");
                 alert.setContentText("Выберите порт");
             }
-            if(iComPortBaudRate == null){
+            if(comPortBaudRate.getValue() == null){
                 alert.setHeaderText("Не установлена скорость");
                 alert.setContentText("Выберите скорость");
             }
             alert.showAndWait();
         }
         else{
-            comPortLabel.setText(strComPortNum + ":" + iComPortBaudRate.toString());
+            comPortLabel.setText(comPortNum.getValue() + ":" + comPortBaudRate.getValue());
             comPortCommunication.appendText("out: Pulse Width = " + pulseWidth + ", Pulses Number = " + pulsesNum + "\n");
         }
         
@@ -136,24 +128,28 @@ public class FXMLDocumentController {
     @FXML
     private void initialize() {
         comPort = new ComPort();
-       // System.out.println(comPort.getBaudRateList());
-        //test = new ChoiceBox<>(comPort.getBaudRateList());
-        test.setItems(comPort.getBaudRateList());
+        comPort.setController(this);
+        comPortBaudRate.setItems(comPort.getBaudRateList());
         
         String[] serialPortList = SerialPortList.getPortNames();
         comPortNum.getItems().addAll(serialPortList);
         if(serialPortList.length != 0){
             comPortNum.setValue(serialPortList[0]);
-            strComPortNum = serialPortList[0];
+            //strComPortNum = serialPortList[0];
         }
         
-        comPortBaudRate.getItems().addAll(SerialPort.BAUDRATE_9600,
-                                          SerialPort.BAUDRATE_14400,
-                                          SerialPort.BAUDRATE_19200,
-                                          SerialPort.BAUDRATE_38400,
-                                          SerialPort.BAUDRATE_57600,
-                                          SerialPort.BAUDRATE_115200);
-        comPortBaudRate.setValue(SerialPort.BAUDRATE_9600);
+        comPortNum.getSelectionModel().selectedItemProperty().addListener(
+           (ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            comPort.connect(newValue, comPortBaudRate.getValue());
+            System.out.println(newValue + ":" + comPortBaudRate.getValue());
+        });
+        comPortBaudRate.getSelectionModel().selectedItemProperty().addListener(
+            (ObservableValue<? extends ComPort.BaudRate> observable, ComPort.BaudRate oldValue, ComPort.BaudRate newValue) -> {
+            comPort.connect(comPortNum.getValue(), newValue);
+            System.out.println(comPortNum.getValue() + ":" + newValue);    
+        });
+        
+  
         pulseWidthLabel.setText(Integer.toString(pulseWidth));
         //pulseWidthLabel.fontProperty(Font.font(strComPortNum, FontWeight.LIGHT, 0));
         //pulseWidthLabel.fontProperty(Font.font("Papirus",FontWeight.BOLD,18));
@@ -166,7 +162,7 @@ public class FXMLDocumentController {
                 pulseWidthLabel.setText(Integer.toString(pulseWidth));
             }
         });
-         pulsesNumSlider.valueProperty().addListener(new ChangeListener() {
+        pulsesNumSlider.valueProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observable, Object oldValue, Object newValue) {
                 //pulsesNum = ((Double)pulseWidthSlider.getValue()).intValue();
@@ -174,8 +170,13 @@ public class FXMLDocumentController {
                 pulsesNumberLabel.setText(Integer.toString(pulsesNum));
             }
         });
-    }   
-    
+    }  
+    public void close(){
+        comPort.close();
+    }
+    public void printString(String str){
+        comPortCommunication.appendText(str + "\n");
+    }
     
     public void setMainApp(ComPortApp2 mainApp){
         this.mainApp = mainApp;
